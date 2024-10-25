@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "629757564413",
+    "project_id": "vagabondflutter-app",
+    "storage_bucket": "vagabondflutter-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629757564413:android:b5593223e86c8cd700f594",
+        "android_client_info": {
+          "package_name": "com.example.vagabondapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8oFBkCZiE0_0m45Rb3d24NrFHH9SQzE4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
