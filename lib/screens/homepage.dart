@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vagabondapp/screens/accountpage.dart';
 import 'package:vagabondapp/screens/search.dart';
 import 'package:vagabondapp/widgets/map.dart';
 
@@ -39,6 +40,12 @@ class HomePageState extends State<HomePage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const SearchScreen()),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AccountPage()),
         );
         break;
     }

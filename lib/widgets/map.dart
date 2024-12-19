@@ -16,8 +16,9 @@ class FlutterMapWidgetState extends State<FlutterMapWidget> {
     return Scaffold(
       body: FlutterMap(
         options: const MapOptions(
-          initialCenter: LatLng(22.6210, 75.8036), // Center the map over London
-          initialZoom: 12,
+          initialCenter:
+              LatLng(22.620186, 75.803574), // Center the map over London
+          initialZoom: 16,
         ),
         children: [
           TileLayer(
