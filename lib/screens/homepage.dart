@@ -1,25 +1,57 @@
 import 'package:flutter/material.dart';
-// import 'search_screen.dart'; // Import the SearchPage
+import 'package:vagabondapp/screens/search.dart';
+import 'package:vagabondapp/widgets/map.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final List<String> selectedPlaces;
+
+  const HomePage({super.key, this.selectedPlaces = const []});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
+  List<String> _recentPlaces = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _recentPlaces = widget.selectedPlaces;
+  }
+
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(selectedPlaces: _recentPlaces),
+          ),
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SearchScreen()),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          // Wrap in SingleChildScrollView
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // App Bar
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
@@ -45,208 +77,66 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-
-              // Map Preview
+              // FlutterMap Widget
               Container(
                 height: 200,
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.blue.shade100,
                   borderRadius: BorderRadius.circular(16),
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                      'https://media.wired.com/photos/59269cd37034dc5f91bec0f1/master/pass/GoogleMapTA.jpg',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
                 ),
+                child: const FlutterMapWidget(),
               ),
-
-              // Visited Places Section
+              const SizedBox(height: 16),
+              // Recent Places Section
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
-                  'Visited Places',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  'Recent Places',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-
-              // Places List
-              ListView(
-                physics:
-                    const NeverScrollableScrollPhysics(), // Disable scrolling for ListView
-                shrinkWrap:
-                    true, // Allow ListView to take up only the needed space
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: const [
-                  PlaceCard(
-                    name: 'Eiffel Tower',
-                    location: 'Paris, France',
-                    imageUrl: 'Placeholder for Eiffel Tower image',
-                  ),
-                  PlaceCard(
-                    name: 'Mount Fuji',
-                    location: 'Honshu, Japan',
-                    imageUrl: 'Placeholder for Mount Fuji image',
-                  ),
-                  PlaceCard(
-                    name: 'Great Wall',
-                    location: 'China',
-                    imageUrl: 'Placeholder for Great Wall image',
-                  ),
-                  PlaceCard(
-                    name: 'Colosseum',
-                    location: 'Rome, Italy',
-                    imageUrl: 'Placeholder for Colosseum image',
-                  ),
-                  PlaceCard(
-                    name: 'Taj Mahal',
-                    location: 'Agra, India',
-                    imageUrl: 'Placeholder for Taj Mahal image',
-                  ),
-                ],
-              ),
+              const SizedBox(height: 8),
+              _recentPlaces.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'No recent places available.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _recentPlaces.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(_recentPlaces[index]),
+                        );
+                      },
+                    ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 10,
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildNavItem(Icons.home, 'Home', true, context),
-              _buildNavItem(Icons.search, 'Search', false,
-                  context), // Navigate to search page
-              _buildNavItem(
-                  Icons.bookmark_border, 'Bucket List', false, context),
-            ],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(
-      IconData icon, String label, bool isSelected, BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // if (label == 'Search') {
-        //   // Navigate to SearchPage
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(builder: (context) => const SearchScreen()),
-        //   );
-        // }
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Colors.blue : Colors.grey,
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.blue : Colors.grey,
-              fontSize: 12,
-            ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Account',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class PlaceCard extends StatelessWidget {
-  final String name;
-  final String location;
-  final String imageUrl;
-
-  const PlaceCard({
-    super.key,
-    required this.name,
-    required this.location,
-    required this.imageUrl,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: () {},
-        borderRadius: BorderRadius.circular(12),
-        child: Row(
-          children: [
-            // Placeholder for Place Image
-            Container(
-              width: 100,
-              height: 100,
-              color: Colors.grey.shade300, // Placeholder color
-              alignment: Alignment.center,
-              child: Text(
-                imageUrl,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.black54),
-              ),
-            ),
-            // Place Details
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.place,
-                          size: 16,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          location,
-                          style: const TextStyle(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
       ),
     );
   }
